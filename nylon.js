@@ -11,7 +11,6 @@ var Nylon = (function( TWEEN ) {
         return [ 'rgba(', c.r, ', ', c.g, ', ', c.b, ', ', c.opacity, ')' ].join( '' );
     }
 
-
     // Is this too insane?
     var Extend = function( Obj ) {
         return function( options ) {
@@ -68,6 +67,10 @@ var Nylon = (function( TWEEN ) {
         this.el = el;
         this.ctx = el.getContext( '2d' );
         this.elements = [];
+        this.attributes = {
+            width: el.clientWidth,
+            height: el.clientHeight
+        }
     };
 
     Canvas.prototype = {
@@ -75,7 +78,7 @@ var Nylon = (function( TWEEN ) {
             this.elements.push( element ) ;
         },
         render: function() {
-            this.ctx.clearRect( 0, 0, 1000, 1000 ); // wipe entire canvas - inefficient.
+            this.ctx.clearRect( 0, 0, this.attributes.width, this.attributes.height ); // wipe entire canvas - inefficient.
             for(var i in this.elements ) {
                 this.elements[ i ].render( this.ctx );
             }
