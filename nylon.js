@@ -11,6 +11,59 @@ var Nylon = (function( TWEEN ) {
         return [ 'rgba(', c.r, ', ', c.g, ', ', c.b, ', ', c.opacity, ')' ].join( '' );
     }
 
+
+    // Is this too insane?
+    var Extend = function( Obj ) {
+        return function( options ) {
+            var obj = function( attributes ) {
+                Obj.call( this, attributes );
+            };
+
+            obj.extend = Extend( obj );
+
+            // Old style
+            obj.prototype = new Obj();
+            obj.prototype.constructor = obj;
+
+            // New style
+            // shape.prototype = Object.create( Shape.prototype );
+
+            for( var key in options )  {
+                obj.prototype[ key ] = options[ key ];
+            }
+
+            return obj;
+        };
+    };
+
+    var Animate = function( attributes, duration, tween ) {
+        var args = Array.prototype.slice.call( arguments ),
+            target,
+            attributes,
+            duration,
+            tween;
+
+        if( typeof args[0] === 'object' ) {
+            target = this.attributes;
+        } else {
+            target = this.attributes[ args.shift() ];
+        }
+
+        attributes = args.shift();
+        duration = args.shift();
+        tween = args.shift();
+
+        duration = duration || 1000;
+        tween = tween || TWEEN.Easing.Quadratic.InOut;
+
+        this.tween = new TWEEN.Tween( target )
+            .to( attributes , duration )
+            .easing( tween )
+            .start();
+
+        return this;
+    };
+
     var Canvas = function( el ) {
         this.el = el;
         this.ctx = el.getContext( '2d' );
@@ -54,37 +107,14 @@ var Nylon = (function( TWEEN ) {
             }
 
             ctx.restore();
-        }
+        },
+        animate: Animate
     };
 
     var Shape = function( attributes ) {
         attributes = attributes || {};
         this.attributes = attributes;
         this.initialize( attributes );
-    };
-
-    // Is this too insane?
-    var Extend = function( Obj ) {
-        return function( options ) {
-            var obj = function( attributes ) {
-                Obj.call( this, attributes );
-            };
-
-            obj.extend = Extend( obj );
-
-            // Old style
-            obj.prototype = new Obj();
-            obj.prototype.constructor = obj;
-
-            // New style
-            // shape.prototype = Object.create( Shape.prototype );
-
-            for( var key in options )  {
-                obj.prototype[ key ] = options[ key ];
-            }
-
-            return obj;
-        };
     };
 
     Shape.extend = Extend( Shape );
@@ -118,34 +148,7 @@ var Nylon = (function( TWEEN ) {
 
             ctx.restore();
         },
-        animate: function( attributes, duration, tween ) {
-
-            var args = Array.prototype.slice.call( arguments ),
-                target,
-                attributes,
-                duration,
-                tween;
-
-            if( typeof args[0] === 'object' ) {
-                target = this.attributes;
-            } else {
-                target = this.attributes[ args.shift() ];
-            }
-
-            attributes = args.shift();
-            duration = args.shift();
-            tween = args.shift();
-
-            duration = duration || 1000;
-            tween = tween || TWEEN.Easing.Quadratic.InOut;
-
-            this.tween = new TWEEN.Tween( target )
-                .to( attributes , duration )
-                .easing( tween )
-                .start();
-
-            return this;
-        }
+        animate: Animate
     };
 
     var Arc = Shape.extend({
