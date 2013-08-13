@@ -8,17 +8,7 @@ var Nylon = (function( TWEEN ) {
         c.b = c.b || 0;
         c.opacity = c.opacity || 1;
 
-        return [
-            'rgba(',
-            c.r,
-            ', ',
-            c.g,
-            ', ',
-            c.b,
-            ', ',
-            c.opacity,
-            ')'
-        ].join("");
+        return [ 'rgba(', c.r, ', ', c.g, ', ', c.b, ', ', c.opacity, ')' ].join( '' );
     }
 
     var Canvas = function( el ) {
@@ -57,7 +47,7 @@ var Nylon = (function( TWEEN ) {
     var Shape = function( attributes ) {
         attributes = attributes || {};
         this.attributes = attributes;
-        this.attributes.rotate = ( 'rotate' in attributes ? attributes.rotate : 0 );
+        this.initialize( attributes );
     };
 
     // Is this too insane?
@@ -87,6 +77,8 @@ var Nylon = (function( TWEEN ) {
     Shape.extend = Extend( Shape );
 
     Shape.prototype = {
+        initialize: function() {},
+        draw: function( ctx ) { },
         render: function( ctx ) {
             var attr = this.attributes;
 
@@ -117,7 +109,6 @@ var Nylon = (function( TWEEN ) {
                 ctx.strokeStyle = pStroke;
             }
         },
-        draw: function( ctx ) { },
         animate: function( attributes, duration, tween ) {
 
             var args = Array.prototype.slice.call( arguments ),
@@ -151,6 +142,9 @@ var Nylon = (function( TWEEN ) {
     };
 
     var Arc = Shape.extend({
+        initialize: function( attributes ) {
+            this.attributes.rotate = ( 'rotate' in attributes ? attributes.rotate : 0 );
+        },
         draw: function( ctx ) {
             var attr = this.attributes;
             ctx.arc(
