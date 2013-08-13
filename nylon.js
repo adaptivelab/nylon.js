@@ -29,8 +29,12 @@ var Nylon = (function( TWEEN ) {
         }
     };
 
-    var Group = function( elements ) {
+    var Group = function( attributes, elements ) {
         this.elements = elements || [];
+        this.attributes = { x: 0, y: 0, rotate: 0 };
+        for( var key in attributes ) {
+            this.attributes[ key ] = attributes[ key ];
+        }
     };
 
     Group.prototype = {
@@ -38,9 +42,18 @@ var Nylon = (function( TWEEN ) {
             this.elements.push( element ) ;
         },
         render: function( ctx ) {
+            var attr = this.attributes;
+
+            ctx.save();
+
+            ctx.translate( attr.x, attr.y );
+            ctx.rotate( attr.rotate );
+
             for(var i in this.elements ) {
                 this.elements[ i ].render( ctx );
             }
+
+            ctx.restore();
         }
     };
 
@@ -80,52 +93,30 @@ var Nylon = (function( TWEEN ) {
         initialize: function() {},
         draw: function( ctx ) { },
         render: function( ctx ) {
-            var attr = this.attributes,
-                pFont,
-                pFill,
-                pStroke,
-                pWidth
+            var attr = this.attributes;
 
-            ctx.moveTo( this.x, this.y );
-            ctx.beginPath();
+            ctx.save();
 
             if ( 'font' in attr ) {
-                pFont = ctx.font;
                 ctx.font = attr.font;
             }
 
             if ( 'fill' in attr ) {
-                pFill = ctx.fillStyle;
                 ctx.fillStyle = rgba( attr.fill );
             }
 
             if ( 'stroke' in attr ) {
-                pStroke = ctx.strokeStyle;
-                pWidth = ctx.lineWidth;
-
-                if( 'lineWidth' in attr ) {
-                    ctx.lineWidth = attr.lineWidth;
-                }
-
                 ctx.strokeStyle = rgba( attr.stroke );
             }
 
+            if( 'lineWidth' in attr ) {
+                ctx.lineWidth = attr.lineWidth;
+            }
+
+            ctx.beginPath();
             this.draw( ctx );
 
-            if ( 'font' in attr ) {
-                ctx.font = pFont;
-            }
-
-            if ( 'fill' in attr ) {
-                ctx.fill();
-                ctx.fillStyle = pFill;
-            }
-
-            if ( 'stroke' in attr ) {
-                ctx.stroke();
-                ctx.lineWidth = pWidth;
-                ctx.strokeStyle = pStroke;
-            }
+            ctx.restore();
         },
         animate: function( attributes, duration, tween ) {
 
@@ -171,6 +162,14 @@ var Nylon = (function( TWEEN ) {
                 attr.rotate + attr.angle,
                 0
             );
+
+            if ( 'fill' in attr ) {
+                ctx.fill();
+            }
+
+            if ( 'stroke' in attr ) {
+                ctx.stroke();
+            }
         }
     });
 
@@ -186,24 +185,24 @@ var Nylon = (function( TWEEN ) {
                 2 * Math.PI,
                 1
             );
+
+            if ( 'fill' in attr ) {
+                ctx.fill();
+            }
+
+            if ( 'stroke' in attr ) {
+                ctx.stroke();
+            }
         }
     });
 
     var Label = Shape.extend({
         draw: function( ctx ) {
-            var attr = this.attributes,
-                pTextAlign,
-                pTextBaseline;
-
-            pTextAlign = ctx.pTextAlign;
-            pTextBaseline = ctx.pTextBaseline;
+            var attr = this.attributes;
 
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText( attr.text, attr.x, attr.y );
-
-            ctx.pTextAlign = pTextAlign;
-            ctx.pTextBaseline = pTextBaseline;
         }
     });
 
