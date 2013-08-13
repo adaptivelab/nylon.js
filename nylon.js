@@ -80,31 +80,49 @@ var Nylon = (function( TWEEN ) {
         initialize: function() {},
         draw: function( ctx ) { },
         render: function( ctx ) {
-            var attr = this.attributes;
+            var attr = this.attributes,
+                pFont,
+                pFill,
+                pStroke,
+                pWidth
 
             ctx.moveTo( this.x, this.y );
             ctx.beginPath();
 
-            this.draw( ctx );
+            if ( 'font' in attr ) {
+                pFont = ctx.font;
+                ctx.font = attr.font;
+            }
 
             if ( 'fill' in attr ) {
-                var pFill = ctx.fillStyle;
+                pFill = ctx.fillStyle;
                 ctx.fillStyle = rgba( attr.fill );
-                ctx.fill();
-                ctx.fillStyle = pFill;
             }
 
             if ( 'stroke' in attr ) {
-                var pStroke = ctx.strokeStyle,
-                    pWidth = ctx.lineWidth;
+                pStroke = ctx.strokeStyle;
+                pWidth = ctx.lineWidth;
 
                 if( 'lineWidth' in attr ) {
                     ctx.lineWidth = attr.lineWidth;
                 }
 
                 ctx.strokeStyle = rgba( attr.stroke );
-                ctx.stroke();
+            }
 
+            this.draw( ctx );
+
+            if ( 'font' in attr ) {
+                ctx.font = pFont;
+            }
+
+            if ( 'fill' in attr ) {
+                ctx.fill();
+                ctx.fillStyle = pFill;
+            }
+
+            if ( 'stroke' in attr ) {
+                ctx.stroke();
                 ctx.lineWidth = pWidth;
                 ctx.strokeStyle = pStroke;
             }
@@ -129,8 +147,6 @@ var Nylon = (function( TWEEN ) {
 
             duration = duration || 1000;
             tween = tween || TWEEN.Easing.Quadratic.InOut;
-
-            console.log( attributes, duration, tween );
 
             this.tween = new TWEEN.Tween( target )
                 .to( attributes , duration )
@@ -173,11 +189,30 @@ var Nylon = (function( TWEEN ) {
         }
     });
 
+    var Label = Shape.extend({
+        draw: function( ctx ) {
+            var attr = this.attributes,
+                pTextAlign,
+                pTextBaseline;
+
+            pTextAlign = ctx.pTextAlign;
+            pTextBaseline = ctx.pTextBaseline;
+
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText( attr.text, attr.x, attr.y );
+
+            ctx.pTextAlign = pTextAlign;
+            ctx.pTextBaseline = pTextBaseline;
+        }
+    });
+
     Nylon.Canvas = Canvas;
     Nylon.Group = Group;
     Nylon.Shape = Shape;
     Nylon.Arc = Arc;
     Nylon.Circle = Circle;
+    Nylon.Label = Label;
 
     return Nylon;
 
