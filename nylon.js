@@ -35,10 +35,19 @@ var Nylon = (function( TWEEN ) {
         };
     };
 
-    var Animate = function( attributes, duration, tween ) {
+    /**
+     * Tween properties using the TWEEN library
+     *
+     * @param {string} target (optional) The keyname of the property to animate
+     * @param {object} destination The values to tween to
+     * @param {float} duration The duration of the animation in msec, default is 1000
+     * @param {Easing} easing The type of easing to use, default is Quadratic.InOut
+     * @return {this} Returns the parent object for chaining.
+     */
+    var Animate = function() {
         var args = Array.prototype.slice.call( arguments ),
             target,
-            attributes,
+            destination,
             duration,
             tween;
 
@@ -48,7 +57,7 @@ var Nylon = (function( TWEEN ) {
             target = this.attributes[ args.shift() ];
         }
 
-        attributes = args.shift();
+        destination = args.shift();
         duration = args.shift();
         tween = args.shift();
 
@@ -56,7 +65,7 @@ var Nylon = (function( TWEEN ) {
         tween = tween || TWEEN.Easing.Quadratic.InOut;
 
         this.tween = new TWEEN.Tween( target )
-            .to( attributes , duration )
+            .to( destination , duration )
             .easing( tween )
             .start();
 
