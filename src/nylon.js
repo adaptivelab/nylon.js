@@ -122,7 +122,7 @@ var Nylon = (function( TWEEN ) {
 
             ctx.restore();
         },
-        animate: Animate
+        animate: animate
     };
 
     var Shape = function( attributes ) {
