@@ -1,5 +1,7 @@
 var Nylon = (function( TWEEN ) {
 
+    'use strict';
+
     var Nylon = {};
 
     var rgba = function( c ) {
@@ -9,16 +11,16 @@ var Nylon = (function( TWEEN ) {
         c.opacity = c.opacity || 1;
 
         return [ 'rgba(', c.r, ', ', c.g, ', ', c.b, ', ', c.opacity, ')' ].join( '' );
-    }
+    };
 
     // Is this too insane?
-    var Extend = function( Obj ) {
+    var extend = function( Obj ) {
         return function( options ) {
             var obj = function( attributes ) {
                 Obj.call( this, attributes );
             };
 
-            obj.extend = Extend( obj );
+            obj.extend = extend( obj );
 
             // Old style
             obj.prototype = new Obj();
@@ -44,7 +46,7 @@ var Nylon = (function( TWEEN ) {
      * @param {Easing} easing The type of easing to use, default is Quadratic.InOut
      * @return {this} Returns the parent object for chaining.
      */
-    var Animate = function() {
+    var animate = function() {
         var args = Array.prototype.slice.call( arguments ),
             target,
             destination,
@@ -79,7 +81,7 @@ var Nylon = (function( TWEEN ) {
         this.attributes = {
             width: el.clientWidth,
             height: el.clientHeight
-        }
+        };
     };
 
     Canvas.prototype = {
@@ -129,7 +131,7 @@ var Nylon = (function( TWEEN ) {
         this.initialize( attributes );
     };
 
-    Shape.extend = Extend( Shape );
+    Shape.extend = extend( Shape );
 
     Shape.prototype = {
         initialize: function() {},
@@ -160,7 +162,7 @@ var Nylon = (function( TWEEN ) {
 
             ctx.restore();
         },
-        animate: Animate
+        animate: animate
     };
 
     var Arc = Shape.extend({
