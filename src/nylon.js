@@ -4,6 +4,11 @@ var Nylon = (function( TWEEN ) {
 
     var Nylon = {};
 
+    /**
+     * Converts our made-up rgb object into an "rgba()" string
+     * @param  {object} c Object containing attributes in the format { r: <number>, g: <number>, b: <number>, opacity: <number> }
+     * @return {string}   An "rgba()" string
+     */
     var rgba = function( c ) {
         c.r = c.r || 0;
         c.g = c.g || 0;
@@ -13,7 +18,13 @@ var Nylon = (function( TWEEN ) {
         return [ 'rgba(', c.r, ', ', c.g, ', ', c.b, ', ', c.opacity, ')' ].join( '' );
     };
 
-    // Is this too insane?
+    /**
+     * Generates a method which extends an object
+     * @param  {object} Obj Parent object to generate extend method for
+     * @return {function}   Method which will return an extended version of Obj
+     *
+     * Is this too insane?
+     */
     var extend = function( Obj ) {
         return function( options ) {
             var obj = function( attributes ) {
@@ -74,6 +85,10 @@ var Nylon = (function( TWEEN ) {
         return this;
     };
 
+    /**
+     * Wraps an object around canvas that holds elements and handle rendering
+     * @param {dom} el A <canvas> element
+     */
     var Canvas = function( el ) {
         this.el = el;
         this.ctx = el.getContext( '2d' );
@@ -96,6 +111,11 @@ var Nylon = (function( TWEEN ) {
         }
     };
 
+    /**
+     * A container of objects that allows composite positioning / animation
+     * @param {object} attributes Positioning and rotational attributes in the format { x: <number>, y: <number>, rotate: <number> }
+     * @param {[type]} elements   [description]
+     */
     var Group = function( attributes, elements ) {
         this.elements = elements || [];
         this.attributes = { x: 0, y: 0, rotate: 0 };
@@ -125,6 +145,11 @@ var Nylon = (function( TWEEN ) {
         animate: animate
     };
 
+    /**
+     * A shape primative
+     * @param {object} attributes Object containing positions and styles:
+     *                            { x: <number>, y: <number>, rotate: <number>, fill: <string>, stroke: <string> }
+     */
     var Shape = function( attributes ) {
         attributes = attributes || {};
         this.attributes = attributes;
@@ -158,6 +183,10 @@ var Nylon = (function( TWEEN ) {
             }
 
             ctx.beginPath();
+
+            ctx.translate( attr.x, attr.y );
+            ctx.rotate( attr.rotate );
+
             this.draw( ctx );
 
             ctx.restore();
@@ -165,6 +194,11 @@ var Nylon = (function( TWEEN ) {
         animate: animate
     };
 
+    /**
+     * An Arc primitive shape
+     * @param {object} attributes Object containing positions and styles:
+     *                            { radius: <number>, angle: <number> }
+     */
     var Arc = Shape.extend({
         initialize: function( attributes ) {
             this.attributes.rotate = ( 'rotate' in attributes ? attributes.rotate : 0 );
@@ -172,11 +206,11 @@ var Nylon = (function( TWEEN ) {
         draw: function( ctx ) {
             var attr = this.attributes;
             ctx.arc(
-                attr.x,
-                attr.y,
+                0,
+                0,
                 attr.radius,
-                attr.rotate,
-                attr.rotate + attr.angle,
+                0,
+                attr.angle,
                 0
             );
 
@@ -190,13 +224,18 @@ var Nylon = (function( TWEEN ) {
         }
     });
 
+    /**
+     * A Circle primitive shape
+     * @param {object} attributes Object containing positions and styles:
+     *                            { radius: <number> }
+     */
     var Circle = Shape.extend({
         draw: function( ctx ) {
             var attr = this.attributes;
 
             ctx.arc(
-                attr.x,
-                attr.y,
+                0,
+                0,
                 attr.radius,
                 0,
                 2 * Math.PI,
@@ -213,13 +252,18 @@ var Nylon = (function( TWEEN ) {
         }
     });
 
+    /**
+     * A Label primitive
+     * @param {object} attributes Object containing positions and styles:
+     *                            { align: <string>, baseline: <string>, text: <string> }
+     */
     var Label = Shape.extend({
         draw: function( ctx ) {
             var attr = this.attributes;
 
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText( attr.text, attr.x, attr.y );
+            ctx.textAlign = ( 'align' in attr ? attr.align : 'left' );
+            ctx.textBaseline = ( 'baseline' in attr ? attr.baseline : 'bottom' );
+            ctx.fillText( attr.text, 0, 0 );
         }
     });
 
