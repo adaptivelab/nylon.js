@@ -89,9 +89,21 @@ var Nylon = (function( TWEEN ) {
      * Wraps an object around canvas that holds elements and handle rendering
      * @param {dom} el A <canvas> element
      */
-    var Canvas = function( el ) {
+    var Canvas = function( options ) {
+        var el;
+
+        if( typeof options === 'object' ) {
+            el = document.createElement( 'canvas' );
+            el.setAttribute( 'width', options.width );
+            el.setAttribute( 'height', options.height );
+            document.getElementById( options.el ).appendChild( el );
+        } else {
+            el = document.getElementById( options );
+        }
+
         this.el = el;
         this.ctx = el.getContext( '2d' );
+
         this.elements = [];
         this.attributes = {
             width: el.clientWidth,
