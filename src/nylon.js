@@ -1,4 +1,4 @@
-var Nylon = (function( TWEEN ) {
+var Nylon = (function( TWEEN, requestAnimationFrame ) {
 
     'use strict';
 
@@ -119,6 +119,20 @@ var Nylon = (function( TWEEN ) {
             this.ctx.clearRect( 0, 0, this.attributes.width, this.attributes.height ); // wipe entire canvas - inefficient.
             for(var i in this.elements ) {
                 this.elements[ i ].render( this.ctx );
+            }
+        },
+        start: function() {
+            this.running = true;
+            this.animate();
+        },
+        stop: function() {
+            this.running = false;
+        },
+        animate: function() {
+            if( this.running ) {
+                TWEEN.update();
+                this.render();
+                requestAnimationFrame( this.animate.bind( this ) );
             }
         }
     };
@@ -288,4 +302,4 @@ var Nylon = (function( TWEEN ) {
 
     return Nylon;
 
-})( TWEEN );
+})( TWEEN, requestAnimationFrame );
